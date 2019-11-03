@@ -27,7 +27,7 @@
 
 
                                        /* ---------------------- MISCELLANEOUS ----------------------- */
-#define OS_APP_HOOKS_EN           1    /* Application-defined hooks are called from the uC/OS-II hooks */
+#define OS_APP_HOOKS_EN           0    /* Application-defined hooks are called from the uC/OS-II hooks */
 #define OS_ARG_CHK_EN             0    /* Enable (1) or Disable (0) argument checking                  */
 #define OS_CPU_HOOKS_EN           1    /* uC/OS-II hooks are found in the processor port files         */
 

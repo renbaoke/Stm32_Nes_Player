@@ -387,6 +387,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\main.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\bsp_driver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -396,6 +401,16 @@
               <FileName>os_cfg.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Include\os_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Include\app_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_driver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Include\bsp_driver.h</FilePath>
             </File>
           </Files>
         </Group>

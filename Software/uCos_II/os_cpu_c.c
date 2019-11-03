@@ -363,7 +363,7 @@ void  OSTimeTickHook (void)
 *********************************************************************************************************
 */
 
-void  OS_CPU_SysTickHandler (void)
+void  SysTick_Handler (void)
 {
     OS_CPU_SR  cpu_sr;
 
@@ -375,27 +375,4 @@ void  OS_CPU_SysTickHandler (void)
     OSTimeTick();                                /* Call uC/OS-II's OSTimeTick()                       */
 
     OSIntExit();                                 /* Tell uC/OS-II that we are leaving the ISR          */
-}
-
-/*
-*********************************************************************************************************
-*                                          INITIALIZE SYS TICK
-*
-* Description: Initialize the SysTick.
-*
-* Arguments  : cnts          is the number of SysTick counts between two OS tick interrupts.
-*
-* Note(s)    : 1) This function MUST be called after OSStart() & after processor initialization.
-*********************************************************************************************************
-*/
-
-void  OS_CPU_SysTickInit (INT32U  cnts)
-{
-    OS_CPU_CM3_NVIC_ST_RELOAD = cnts - 1u;
-                                                 /* Set prio of SysTick handler to min prio.           */
-    OS_CPU_CM3_NVIC_PRIO_ST   = OS_CPU_CM3_NVIC_PRIO_MIN;
-                                                 /* Enable timer.                                      */
-    OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_CLK_SRC | OS_CPU_CM3_NVIC_ST_CTRL_ENABLE;
-                                                 /* Enable timer interrupt.                            */
-    OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_INTEN;
 }

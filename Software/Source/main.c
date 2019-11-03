@@ -1,22 +1,26 @@
 #include "stm32f10x.h"
+#include "bsp_driver.h"
+#include "ucos_ii.h"
 
-int main()
+OS_STK start_stk[START_TASK_STK_SIZE];
+
+void start_task(void *pdata)
 {
-    GPIO_InitTypeDef Led_InitData;
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-
-    Led_InitData.GPIO_Pin = GPIO_Pin_13;
-    Led_InitData.GPIO_Speed = GPIO_Speed_50MHz;
-    Led_InitData.GPIO_Mode = GPIO_Mode_Out_PP;
-
-    GPIO_Init(GPIOC, &Led_InitData);
+    SysTick_Init();
+    LED_Init();
 
     while (1)
     {
-        for (int i = 0; i < 36 * 1024 * 1024; i++);
-        GPIO_WriteBit(GPIOC, GPIO_Pin_13, Bit_SET);
-        for (int i = 0; i < 36 * 1024 * 1024; i++);
-        GPIO_WriteBit(GPIOC, GPIO_Pin_13, Bit_RESET);
+        LED_SetStat(LED_ON);
+        OSTimeDlyHMSM(0, 0, 1, 0);
+        LED_SetStat(LED_OFF);
+        OSTimeDlyHMSM(0, 0, 1, 0);
     }
+}
+
+int main()
+{
+    OSInit();
+    OSTaskCreate(start_task, 0, &start_stk[START_TASK_STK_SIZE-1], START_TASK_PRIO);
+    OSStart();
 }

@@ -39,7 +39,7 @@
     EXPORT  OSStartHighRdy
     EXPORT  OSCtxSw
     EXPORT  OSIntCtxSw
-    EXPORT  OS_CPU_PendSVHandler
+    EXPORT  PendSV_Handler
 
 ;********************************************************************************************************
 ;                                                EQUATES
@@ -173,7 +173,7 @@ OSIntCtxSw
 
 ;********************************************************************************************************
 ;                                         HANDLE PendSV EXCEPTION
-;                                     void OS_CPU_PendSVHandler(void)
+;                                     void PendSV_Handler(void)
 ;
 ; Note(s) : 1) PendSV is used to cause a context switch.  This is a recommended method for performing
 ;              context switches with Cortex-M3.  This is because the Cortex-M3 auto-saves half of the
@@ -206,10 +206,10 @@ OSIntCtxSw
 ;              therefore safe to assume that context being switched out was using the process stack (PSP).
 ;********************************************************************************************************
 
-OS_CPU_PendSVHandler
+PendSV_Handler
     CPSID   I                                                   ; Prevent interruption during context switch
     MRS     R0, PSP                                             ; PSP is process stack pointer
-    CBZ     R0, OS_CPU_PendSVHandler_nosave                     ; Skip register save the first time
+    CBZ     R0, PendSV_Handler_nosave                     ; Skip register save the first time
 
     SUBS    R0, R0, #0x20                                       ; Save remaining regs r4-11 on process stack
     STM     R0, {R4-R11}
@@ -219,7 +219,7 @@ OS_CPU_PendSVHandler
     STR     R0, [R1]                                            ; R0 is SP of process being switched out
 
                                                                 ; At this point, entire context of process has been saved
-OS_CPU_PendSVHandler_nosave
+PendSV_Handler_nosave
     PUSH    {R14}                                               ; Save LR exc_return value
     LDR     R0, =OSTaskSwHook                                   ; OSTaskSwHook();
     BLX     R0

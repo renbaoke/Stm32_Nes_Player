@@ -37,6 +37,9 @@
 #define  OS_CPU_EXCEPT_STK_SIZE    128u          /* Default exception stack size is 128 OS_STK entries */
 #endif
 
+#define  OS_CPU_PendSVHandler      PendSV_Handler
+#define  OS_CPU_SysTickHandler     SysTick_Handler
+
 /*
 *********************************************************************************************************
 *                                              DATA TYPES
@@ -124,5 +127,4 @@ void       OS_CPU_PendSVHandler(void);
 
                                                   /* See OS_CPU_C.C                                    */
 void       OS_CPU_SysTickHandler(void);
-void       OS_CPU_SysTickInit(INT32U  cnts);
 #endif
