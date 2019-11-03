@@ -188,7 +188,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>.\Include;.\uCos_II</IncludePath>
             </VariousControls>
@@ -391,6 +391,16 @@
               <FileName>bsp_driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\bsp_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\app_isr.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\shell_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -532,6 +542,12 @@
         </targetInfos>
       </component>
       <component Cclass="Device" Cgroup="StdPeriph Drivers" Csub="RCC" Cvendor="Keil" Cversion="3.5.0" condition="STM32F1xx STDPERIPH">
+        <package name="STM32F1xx_DFP" schemaVersion="1.4.0" url="http://www.keil.com/pack/" vendor="Keil" version="2.3.0"/>
+        <targetInfos>
+          <targetInfo name="App"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Device" Cgroup="StdPeriph Drivers" Csub="USART" Cvendor="Keil" Cversion="3.5.0" condition="STM32F1xx STDPERIPH RCC">
         <package name="STM32F1xx_DFP" schemaVersion="1.4.0" url="http://www.keil.com/pack/" vendor="Keil" version="2.3.0"/>
         <targetInfos>
           <targetInfo name="App"/>

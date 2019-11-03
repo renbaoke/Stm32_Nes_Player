@@ -2,18 +2,22 @@
 #include "bsp_driver.h"
 #include "ucos_ii.h"
 
-OS_STK start_stk[START_TASK_STK_SIZE];
+extern OS_STK ShellTaskStk[SHELL_TASK_STK_SIZE];
+extern void ShellTask(void *Arg);
 
-void start_task(void *pdata)
+OS_STK StartTaskStk[START_TASK_STK_SIZE];
+void StartTask(void *Arg)
 {
-    SysTick_Init();
-    LED_Init();
+    Board_Init();
+    OSStatInit();
+
+    OSTaskCreate(ShellTask, 0, &ShellTaskStk[SHELL_TASK_STK_SIZE-1], SHELL_TASK_PRIO);
 
     while (1)
     {
-        LED_SetStat(LED_ON);
+        LED_SetStat(LED_On);
         OSTimeDlyHMSM(0, 0, 1, 0);
-        LED_SetStat(LED_OFF);
+        LED_SetStat(LED_Off);
         OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
@@ -21,6 +25,6 @@ void start_task(void *pdata)
 int main()
 {
     OSInit();
-    OSTaskCreate(start_task, 0, &start_stk[START_TASK_STK_SIZE-1], START_TASK_PRIO);
+    OSTaskCreate(StartTask, 0, &StartTaskStk[START_TASK_STK_SIZE-1], START_TASK_PRIO);
     OSStart();
 }

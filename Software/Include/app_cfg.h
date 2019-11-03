@@ -6,4 +6,7 @@
 #define START_TASK_PRIO         4
 #define START_TASK_STK_SIZE     128
 
+#define SHELL_TASK_PRIO         5
+#define SHELL_TASK_STK_SIZE     128
+
 #endif
