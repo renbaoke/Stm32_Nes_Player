@@ -17,9 +17,19 @@ typedef enum
     LED_Off
 } LED_Stat;
 
-#define GPIO_INIT(x) GPIO_Init((x).GPIO_Port, (GPIO_InitTypeDef*)&(x).GPIO_Pin)
+typedef enum
+{
+    LCD_On = 0,
+    LCD_Off
+} LCD_Stat;
+
+#define GPIO_INIT(x)            GPIO_Init((x).GPIO_Port, (GPIO_InitTypeDef*)&(x).GPIO_Pin)
 
 #define USART1_BUF_SIZE         64
+
+#define LCD_WIDTH               320
+#define LCD_HEIGHT              240
+#define COLOR(x)                ((((x) & 0x00ff) << 8) | (((x) & 0xff00) >> 8))
 
 void SysTick_Init(void);
 
@@ -27,6 +37,20 @@ void LED_Init(void);
 void LED_SetStat(LED_Stat Stat);
 
 void USART1_Init(void);
+
+uint8_t SPI2_ReadWriteByte(uint8_t Data);
+
+void LCD_Write(uint8_t Cmd, uint32_t Size, uint8_t *Data);
+
+void LCD_Init(void);
+void LCD_SetStat(LCD_Stat Stat);
+void LCD_Reset(void);
+void LCD_PostInit(void);
+
+void LCD_SetPos(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
+
+void LCD_Clear(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t Color);
+void LCD_DrawRect(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *Data);
 
 void Board_Init(void);
 
