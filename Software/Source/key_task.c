@@ -73,7 +73,8 @@ void KeyTask(void *Arg)
 {
     uint16_t InputKeys = 0;
 
-    while (1) {
+    while (1)
+    {
         OSTimeDlyHMSM(0, 0, 0, 20);
 
         InputKeys = 0;
@@ -93,28 +94,37 @@ void KeyTask(void *Arg)
 
         for (uint8_t i = 0; i < 16; i++)
         {
-            switch ((KeyStatus >> (i * 2)) & 0x3) {
+            switch ((KeyStatus >> (i * 2)) & 0x3)
+            {
             case STAT_A:
-                if (InputKeys & (0x1 << i)) {
+                if (InputKeys & (0x1 << i))
+                {
                     GotoStat_B(i);
                 }
                 break;
             case STAT_B:
-                if (InputKeys & (0x1 << i)) {
+                if (InputKeys & (0x1 << i))
+                {
                     GotoStat_C(i);
                     KeyDown(i);
-                } else {
+                }
+                else
+                {
                     GotoStat_A(i);
                 }
                 break;
             case STAT_C:
-                if (!(InputKeys & (0x1 << i))) {
+                if (!(InputKeys & (0x1 << i)))
+                {
                     GotoStat_D(i);
                 }
             case STAT_D:
-                if (InputKeys & (0x1 << i)) {
+                if (InputKeys & (0x1 << i))
+                {
                     GotoStat_C(i);
-                } else {
+                }
+                else
+                {
                     GotoStat_A(i);
                     KeyUp(i);
                 }
