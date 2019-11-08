@@ -6,7 +6,7 @@
 #define CR      0x0d
 #define DEL     0x7f
 
-extern OS_EVENT *ShellEvent;
+extern OS_EVENT *ShellMbox;
 
 uint8_t  RecvBuf0[USART1_BUF_SIZE];
 uint8_t  RecvBuf1[USART1_BUF_SIZE];
@@ -22,7 +22,7 @@ void USART1_IRQHandler(void)
         if (Data == CR) {
             RecvBuf[RecvCnt++] = '\0';
             RecvCnt = 0;
-            OSMboxPost(ShellEvent, RecvBuf);
+            OSMboxPost(ShellMbox, RecvBuf);
             if (RecvBuf == RecvBuf0)
             {
                 RecvBuf = RecvBuf1;

@@ -9,4 +9,7 @@
 #define SHELL_TASK_PRIO         5
 #define SHELL_TASK_STK_SIZE     128
 
+#define KEY_TASK_PRIO           6
+#define KEY_TASK_STK_SIZE       128
+
 #endif

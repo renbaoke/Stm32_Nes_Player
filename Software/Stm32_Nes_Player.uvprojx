@@ -402,6 +402,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\shell_task.c</FilePath>
             </File>
+            <File>
+              <FileName>key_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\key_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

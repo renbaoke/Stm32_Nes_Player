@@ -12,6 +12,18 @@ int fputc(int ch, FILE *f)
     return (ch);
 }
 
+int KeyDownPrint(uint8_t Key)
+{
+    printf("key %d down\r\n", Key);
+    return 0;
+}
+
+int KeyUpPrint(uint8_t Key)
+{
+    printf("key %d up\r\n", Key);
+    return 0;
+}
+
 typedef int (*CmdFunc)(int Argc, char *Argv[]);
 typedef struct
 {
@@ -103,24 +115,23 @@ CmdType AllCmds[] =
 
 #define MAX_ARGC        16
 uint8_t ArgBuf[USART1_BUF_SIZE];
-OS_EVENT *ShellEvent = NULL;
+
+extern OS_EVENT *ShellMbox;
 
 OS_STK ShellTaskStk[SHELL_TASK_STK_SIZE];
 void ShellTask(void *Arg)
 {
-    uint8_t Err;
-    uint8_t *Msg;
+    INT8U Err;
+    char *Msg;
 
     char*   Argv[MAX_ARGC];
     int     Argc;
-
-    ShellEvent = OSMboxCreate(0);
 
     printf("\r\nwelcome to my shell\r\n");
 
     while(1)
     {
-        Msg = OSMboxPend(ShellEvent, 0, &Err);
+        Msg = OSMboxPend(ShellMbox, 0, &Err);
 
         Argc    = 1;
         Argv[0] = (char*)ArgBuf;

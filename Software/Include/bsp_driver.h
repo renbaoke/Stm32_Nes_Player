@@ -23,6 +23,12 @@ typedef enum
     LCD_Off
 } LCD_Stat;
 
+typedef enum
+{
+    Key_Reset = 0,
+    Key_Set
+} Key_Stat;
+
 #define GPIO_INIT(x)            GPIO_Init((x).GPIO_Port, (GPIO_InitTypeDef*)&(x).GPIO_Pin)
 
 #define USART1_BUF_SIZE         64
@@ -51,6 +57,10 @@ void LCD_SetPos(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
 
 void LCD_Clear(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t Color);
 void LCD_DrawRect(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *Data);
+
+void KEY_Init(void);
+void KEY_SetRowStat(uint8_t Row, Key_Stat Stat);
+Key_Stat Key_GetColStat(uint8_t Col);
 
 void Board_Init(void);
 

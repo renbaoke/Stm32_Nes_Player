@@ -5,13 +5,25 @@
 extern OS_STK ShellTaskStk[SHELL_TASK_STK_SIZE];
 extern void ShellTask(void *Arg);
 
+extern OS_STK KeyTaskStk[KEY_TASK_STK_SIZE];
+extern void KeyTask(void *Arg);
+
+OS_EVENT *ShellMbox;
+
+void Event_Init()
+{
+    ShellMbox = OSMboxCreate(0);
+}
+
 OS_STK StartTaskStk[START_TASK_STK_SIZE];
 void StartTask(void *Arg)
 {
+    Event_Init();
     Board_Init();
     OSStatInit();
 
     OSTaskCreate(ShellTask, 0, &ShellTaskStk[SHELL_TASK_STK_SIZE-1], SHELL_TASK_PRIO);
+    OSTaskCreate(KeyTask, 0, &KeyTaskStk[KEY_TASK_STK_SIZE-1], KEY_TASK_PRIO);
 
     while (1)
     {

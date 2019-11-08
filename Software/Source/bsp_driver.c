@@ -12,6 +12,14 @@ GPIO_InitDef LCD_LED_PIN =      {GPIOB, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_
 GPIO_InitDef LCD_RS_PIN =       {GPIOB, GPIO_Pin_10, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
 GPIO_InitDef LCD_CS_PIN =       {GPIOB, GPIO_Pin_11, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
 GPIO_InitDef LCD_RST_PIN =      {GPIOB, GPIO_Pin_12, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+GPIO_InitDef KEY_R1_PIN =       {GPIOA, GPIO_Pin_3, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+GPIO_InitDef KEY_R2_PIN =       {GPIOA, GPIO_Pin_2, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+GPIO_InitDef KEY_R3_PIN =       {GPIOA, GPIO_Pin_1, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+GPIO_InitDef KEY_R4_PIN =       {GPIOA, GPIO_Pin_0, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+GPIO_InitDef KEY_C1_PIN =       {GPIOA, GPIO_Pin_4, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+GPIO_InitDef KEY_C2_PIN =       {GPIOA, GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+GPIO_InitDef KEY_C3_PIN =       {GPIOA, GPIO_Pin_6, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+GPIO_InitDef KEY_C4_PIN =       {GPIOA, GPIO_Pin_7, GPIO_Speed_50MHz, GPIO_Mode_IPD};
 
 uint8_t LCD_PostInitCmd[] = {
     0x11, 1, 0x00,
@@ -48,7 +56,6 @@ void SysTick_Init()
 
 void LED_Init()
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
     GPIO_INIT(LED_PIN);
 }
 
@@ -59,8 +66,6 @@ void LED_SetStat(LED_Stat Stat)
 
 void USART1_Init(void)
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1|RCC_APB2Periph_GPIOA, ENABLE);
-
     GPIO_INIT(USART1_TX_PIN);
     GPIO_INIT(USART1_RX_PIN);
 
@@ -111,9 +116,6 @@ void LCD_Write(uint8_t Cmd, uint32_t Size, uint8_t *Data)
 
 void LCD_Init()
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO|RCC_APB2Periph_GPIOB, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2,ENABLE);
-
     GPIO_INIT(SPI2_SCK_PIN);
     GPIO_INIT(SPI2_MISO_PIN);
     GPIO_INIT(SPI2_MOSI_PIN);
@@ -210,10 +212,43 @@ void LCD_DrawRect(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *
     LCD_Write(0x2c, 2 * (X2-X1) * (Y2-Y1), (uint8_t*)Data);
 }
 
+void KEY_Init()
+{
+    GPIO_INIT(KEY_R1_PIN);
+    GPIO_INIT(KEY_R2_PIN);
+    GPIO_INIT(KEY_R3_PIN);
+    GPIO_INIT(KEY_R4_PIN);
+    GPIO_INIT(KEY_C1_PIN);
+    GPIO_INIT(KEY_C2_PIN);
+    GPIO_INIT(KEY_C3_PIN);
+    GPIO_INIT(KEY_C4_PIN);
+}
+
+void KEY_SetRowStat(uint8_t Row, Key_Stat Stat)
+{
+    static GPIO_InitDef* Rows[] = {&KEY_R1_PIN, &KEY_R2_PIN, &KEY_R3_PIN, &KEY_R4_PIN};
+    GPIO_WriteBit(Rows[Row]->GPIO_Port, Rows[Row]->GPIO_Pin, Stat == Key_Set ? Bit_SET : Bit_RESET);
+}
+
+Key_Stat Key_GetColStat(uint8_t Col)
+{
+    static GPIO_InitDef* Cols[] = {&KEY_C1_PIN, &KEY_C2_PIN, &KEY_C3_PIN, &KEY_C4_PIN};
+    return GPIO_ReadInputDataBit(Cols[Col]->GPIO_Port, Cols[Col]->GPIO_Pin) == Bit_SET ? Key_Set : Key_Reset;
+}
+
 void Board_Init()
 {
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2,ENABLE);
+
     SysTick_Init();
     LED_Init();
     USART1_Init();
     LCD_Init();
+    KEY_Init();
 }
