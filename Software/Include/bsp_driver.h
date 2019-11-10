@@ -29,6 +29,12 @@ typedef enum
     Key_Set
 } Key_Stat;
 
+typedef enum
+{
+    Flash_WriteEnable = 0,
+    Flash_WriteDisable
+} Flash_WriteStat;
+
 #define GPIO_INIT(x)            GPIO_Init((x).GPIO_Port, (GPIO_InitTypeDef*)&(x).GPIO_Pin)
 
 #define USART1_BUF_SIZE         64
@@ -36,6 +42,11 @@ typedef enum
 #define LCD_WIDTH               320
 #define LCD_HEIGHT              240
 #define COLOR(x)                ((((x) & 0x00ff) << 8) | (((x) & 0xff00) >> 8))
+
+#define FLASH_PAGE_SIZE         256
+#define FLASH_PAGE_PER_SECTOR   16
+#define FLASH_PAGE_PER_BLOCK    256
+#define FLASH_SECTOR_SIZE       (FLASH_PAGE_SIZE * FLASH_PAGE_PER_SECTOR)
 
 void SysTick_Init(void);
 
@@ -61,6 +72,12 @@ void LCD_DrawRect(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *
 void KEY_Init(void);
 void KEY_SetRowStat(uint8_t Row, Key_Stat Stat);
 Key_Stat Key_GetColStat(uint8_t Col);
+
+void FLASH_Init(void);
+void FLASH_Read(uint8_t *Buf, uint32_t Addr, uint16_t Size);
+void FLASH_Write(uint8_t *Buf, uint32_t Addr, uint16_t Size);
+uint8_t FLASH_Status(void);
+uint16_t FLASH_ManufactDeviceID(void);
 
 void Board_Init(void);
 

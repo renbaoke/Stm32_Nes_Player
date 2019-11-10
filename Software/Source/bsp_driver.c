@@ -2,24 +2,25 @@
 #include "bsp_driver.h"
 #include "ucos_ii.h"
 
-GPIO_InitDef LED_PIN =          {GPIOC, GPIO_Pin_13, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef USART1_TX_PIN =    {GPIOA, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
-GPIO_InitDef USART1_RX_PIN =    {GPIOA, GPIO_Pin_10, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING};
-GPIO_InitDef SPI2_SCK_PIN =     {GPIOB, GPIO_Pin_13, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
-GPIO_InitDef SPI2_MISO_PIN =    {GPIOB, GPIO_Pin_14, GPIO_Speed_50MHz, GPIO_Mode_IPU};
-GPIO_InitDef SPI2_MOSI_PIN =    {GPIOB, GPIO_Pin_15, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
-GPIO_InitDef LCD_LED_PIN =      {GPIOB, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef LCD_RS_PIN =       {GPIOB, GPIO_Pin_10, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef LCD_CS_PIN =       {GPIOB, GPIO_Pin_11, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef LCD_RST_PIN =      {GPIOB, GPIO_Pin_12, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef KEY_R1_PIN =       {GPIOA, GPIO_Pin_3, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef KEY_R2_PIN =       {GPIOA, GPIO_Pin_2, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef KEY_R3_PIN =       {GPIOA, GPIO_Pin_1, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef KEY_R4_PIN =       {GPIOA, GPIO_Pin_0, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
-GPIO_InitDef KEY_C1_PIN =       {GPIOA, GPIO_Pin_4, GPIO_Speed_50MHz, GPIO_Mode_IPD};
-GPIO_InitDef KEY_C2_PIN =       {GPIOA, GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_IPD};
-GPIO_InitDef KEY_C3_PIN =       {GPIOA, GPIO_Pin_6, GPIO_Speed_50MHz, GPIO_Mode_IPD};
-GPIO_InitDef KEY_C4_PIN =       {GPIOA, GPIO_Pin_7, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+const GPIO_InitDef LED_PIN =          {GPIOC, GPIO_Pin_13, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef USART1_TX_PIN =    {GPIOA, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
+const GPIO_InitDef USART1_RX_PIN =    {GPIOA, GPIO_Pin_10, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING};
+const GPIO_InitDef SPI2_SCK_PIN =     {GPIOB, GPIO_Pin_13, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
+const GPIO_InitDef SPI2_MISO_PIN =    {GPIOB, GPIO_Pin_14, GPIO_Speed_50MHz, GPIO_Mode_IPU};
+const GPIO_InitDef SPI2_MOSI_PIN =    {GPIOB, GPIO_Pin_15, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
+const GPIO_InitDef LCD_LED_PIN =      {GPIOB, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef LCD_RS_PIN =       {GPIOB, GPIO_Pin_10, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef LCD_CS_PIN =       {GPIOB, GPIO_Pin_11, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef LCD_RST_PIN =      {GPIOB, GPIO_Pin_12, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef KEY_R1_PIN =       {GPIOA, GPIO_Pin_3, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef KEY_R2_PIN =       {GPIOA, GPIO_Pin_2, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef KEY_R3_PIN =       {GPIOA, GPIO_Pin_1, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef KEY_R4_PIN =       {GPIOA, GPIO_Pin_0, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef KEY_C1_PIN =       {GPIOA, GPIO_Pin_4, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+const GPIO_InitDef KEY_C2_PIN =       {GPIOA, GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+const GPIO_InitDef KEY_C3_PIN =       {GPIOA, GPIO_Pin_6, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+const GPIO_InitDef KEY_C4_PIN =       {GPIOA, GPIO_Pin_7, GPIO_Speed_50MHz, GPIO_Mode_IPD};
+const GPIO_InitDef FLASH_CS_PIN =     {GPIOB, GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
 
 uint8_t LCD_PostInitCmd[] = {
     0x11, 1, 0x00,
@@ -46,6 +47,8 @@ uint8_t LCD_PostInitCmd[] = {
     0x2c, 0,
     0xff
 };
+
+uint8_t FlashSectorBuf[FLASH_SECTOR_SIZE];
 
 void SysTick_Init()
 {
@@ -226,14 +229,213 @@ void KEY_Init()
 
 void KEY_SetRowStat(uint8_t Row, Key_Stat Stat)
 {
-    static GPIO_InitDef* Rows[] = {&KEY_R1_PIN, &KEY_R2_PIN, &KEY_R3_PIN, &KEY_R4_PIN};
+    static const GPIO_InitDef* Rows[] = {&KEY_R1_PIN, &KEY_R2_PIN, &KEY_R3_PIN, &KEY_R4_PIN};
     GPIO_WriteBit(Rows[Row]->GPIO_Port, Rows[Row]->GPIO_Pin, Stat == Key_Set ? Bit_SET : Bit_RESET);
 }
 
 Key_Stat Key_GetColStat(uint8_t Col)
 {
-    static GPIO_InitDef* Cols[] = {&KEY_C1_PIN, &KEY_C2_PIN, &KEY_C3_PIN, &KEY_C4_PIN};
+    static const GPIO_InitDef* Cols[] = {&KEY_C1_PIN, &KEY_C2_PIN, &KEY_C3_PIN, &KEY_C4_PIN};
     return GPIO_ReadInputDataBit(Cols[Col]->GPIO_Port, Cols[Col]->GPIO_Pin) == Bit_SET ? Key_Set : Key_Reset;
+}
+
+void FLASH_Init()
+{
+    GPIO_INIT(FLASH_CS_PIN);
+
+    while (FLASH_ManufactDeviceID() != 0xef16);
+}
+
+uint16_t FLASH_ManufactDeviceID()
+{
+    uint16_t ManufactDeviceID = 0;
+
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    SPI2_ReadWriteByte(0x90);
+    SPI2_ReadWriteByte(0x00);
+    SPI2_ReadWriteByte(0x00);
+    SPI2_ReadWriteByte(0x00);
+
+    ManufactDeviceID = SPI2_ReadWriteByte(0xff) << 8;
+    ManufactDeviceID |= SPI2_ReadWriteByte(0xff);
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    return ManufactDeviceID;
+}
+
+void FLASH_Read(uint8_t *Buf, uint32_t Addr, uint16_t Size)
+{
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    SPI2_ReadWriteByte(0x03);
+    SPI2_ReadWriteByte(Addr >> 16);
+    SPI2_ReadWriteByte(Addr >> 8);
+    SPI2_ReadWriteByte(Addr);
+
+    for (uint16_t i = 0; i < Size; i++)
+    {
+        *Buf++ = SPI2_ReadWriteByte(0xff);
+    }
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+}
+
+void FLASH_WaitForIdel()
+{
+    uint8_t FlashStatus;
+
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    SPI2_ReadWriteByte(0x05);
+
+    do
+    {
+        FlashStatus = SPI2_ReadWriteByte(0xff);
+    }
+    while (FlashStatus & 0x01);
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+}
+
+void FLASH_SetWriteStat(Flash_WriteStat Stat)
+{
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    if (Stat == Flash_WriteEnable)
+    {
+        SPI2_ReadWriteByte(0x06);
+    }
+    else
+    {
+        SPI2_ReadWriteByte(0x04);
+    }
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    FLASH_WaitForIdel();
+}
+
+void FLASH_PageWrite(uint8_t *Buf, uint32_t Addr)
+{
+    FLASH_SetWriteStat(Flash_WriteEnable);
+
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    SPI2_ReadWriteByte(0x02);
+    SPI2_ReadWriteByte(Addr >> 16);
+    SPI2_ReadWriteByte(Addr >> 8);
+    SPI2_ReadWriteByte(Addr);
+
+    for (uint16_t i = 0; i < FLASH_PAGE_SIZE; i++)
+    {
+        SPI2_ReadWriteByte(*Buf++);
+    }
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    FLASH_WaitForIdel();
+}
+
+void FLASH_SectorWrite(uint8_t *Buf, uint32_t Addr)
+{
+    for (uint8_t i = 0; i < FLASH_PAGE_PER_SECTOR; i++)
+    {
+        FLASH_PageWrite(Buf, Addr);
+        Buf  += FLASH_PAGE_SIZE;
+        Addr += FLASH_PAGE_SIZE;
+    }
+}
+
+void FLASH_SectorErase(uint32_t Addr)
+{
+    FLASH_SetWriteStat(Flash_WriteEnable);
+
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    SPI2_ReadWriteByte(0x20);
+    SPI2_ReadWriteByte(Addr >> 16);
+    SPI2_ReadWriteByte(Addr >> 8);
+    SPI2_ReadWriteByte(Addr);
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    FLASH_WaitForIdel();
+}
+
+void FLASH_Write(uint8_t *Buf, uint32_t Addr, uint16_t Size)
+{
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    uint32_t SectorAddr = Addr / FLASH_SECTOR_SIZE * FLASH_SECTOR_SIZE;
+    uint16_t SectorOffset = Addr % FLASH_SECTOR_SIZE;
+    uint16_t WriteSize = SectorOffset + Size > FLASH_SECTOR_SIZE ? FLASH_SECTOR_SIZE - SectorOffset : Size;
+
+    if (Size < WriteSize)
+    {
+        WriteSize = Size;
+    }
+
+    uint16_t i;
+    uint8_t *p;
+
+    if (SectorOffset != 0)
+    {
+        FLASH_Read(FlashSectorBuf, SectorAddr, FLASH_SECTOR_SIZE);
+
+        for (i = 0, p = FlashSectorBuf + SectorOffset; i < WriteSize; i++)
+        {
+            *p++ = *Buf++;
+        }
+
+        FLASH_SectorErase(SectorAddr);
+        FLASH_SectorWrite(FlashSectorBuf, SectorAddr);
+
+        Buf  += WriteSize;
+        Addr += WriteSize;
+        Size -= WriteSize;
+    }
+
+    while (Size >= FLASH_SECTOR_SIZE)
+    {
+        FLASH_SectorErase(Addr);
+        FLASH_SectorWrite(Buf, Addr);
+
+        Buf  += FLASH_SECTOR_SIZE;
+        Addr += FLASH_SECTOR_SIZE;
+        Size -= FLASH_SECTOR_SIZE;
+    }
+
+    if (Size > 0)
+    {
+        FLASH_Read(FlashSectorBuf, Addr, FLASH_SECTOR_SIZE);
+
+        for (i = 0, p = FlashSectorBuf; i < Size; i++)
+        {
+            *p++ = *Buf++;
+        }
+
+        FLASH_SectorErase(Addr);
+        FLASH_SectorWrite(FlashSectorBuf, Addr);
+    }
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+}
+
+uint8_t FLASH_Status()
+{
+    GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    uint8_t FlashStatus;
+
+    SPI2_ReadWriteByte(0x05);
+
+    FlashStatus = SPI2_ReadWriteByte(0xff);
+
+    GPIO_SetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
+
+    return FlashStatus;
 }
 
 void Board_Init()
@@ -251,4 +453,5 @@ void Board_Init()
     USART1_Init();
     LCD_Init();
     KEY_Init();
+    FLASH_Init();
 }

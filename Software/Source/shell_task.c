@@ -24,6 +24,9 @@ int KeyUpPrint(uint8_t Key)
     return 0;
 }
 
+#define CMD_BUF_SIZE        512
+uint8_t CmdBuf[CMD_BUF_SIZE];
+
 typedef int (*CmdFunc)(int Argc, char *Argv[]);
 typedef struct
 {
@@ -92,9 +95,73 @@ int CPUCmd(int Argc, char *Argv[])
     {
         return -1;
     }
+
     if (!strcmp(Argv[1], "usage"))
     {
         printf("%d%%\r\n", OSCPUUsage);
+    }
+    else
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int FlashCmd(int Argc, char *Argv[])
+{
+    if (Argc < 2)
+    {
+        return -1;
+    }
+
+    if (!strcmp(Argv[1], "id"))
+    {
+        printf("%x\r\n", FLASH_ManufactDeviceID());
+    }
+    else if (!strcmp(Argv[1], "read"))
+    {
+        if (Argc < 4)
+        {
+            return -1;
+        }
+        uint32_t Addr = strtoul(Argv[2], NULL, 16);
+        uint16_t Size = atoi(Argv[3]);
+
+        if (Size > CMD_BUF_SIZE)
+        {
+            printf("size should be less then %d\r\n", CMD_BUF_SIZE);
+            return -1;
+        }
+
+        FLASH_Read(CmdBuf, Addr, Size);
+
+        for (uint16_t i = 0; i < Size; i++)
+        {
+            printf("%x", CmdBuf[i]);
+            if (i % 16 == 15)
+            {
+                printf("\r\n");
+            }
+        }
+
+        printf("\r\n");
+    }
+    else if (!strcmp(Argv[1], "write"))
+    {
+        if (Argc < 4)
+        {
+            return -1;
+        }
+
+        uint32_t Addr = strtoul(Argv[2], NULL, 16);
+        uint16_t Size = strlen(Argv[3]);
+
+        FLASH_Write((uint8_t*)Argv[3], Addr, Size);
+    }
+    else if (!strcmp(Argv[1], "status"))
+    {
+        printf("%x\r\n", FLASH_Status());
     }
     else
     {
@@ -108,7 +175,8 @@ CmdType AllCmds[] =
 {
     {"echo", EchoCmd},
     {"gpio", GPIOCmd},
-    {"cpu", CPUCmd}
+    {"cpu", CPUCmd},
+    {"flash", FlashCmd}
 };
 
 //////////////////////////////////////////////////////////////////////////////////
