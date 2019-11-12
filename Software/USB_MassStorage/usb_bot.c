@@ -8,37 +8,37 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics International N.V. 
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics International N.V.
   * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without 
+  * Redistribution and use in source and binary forms, with or without
   * modification, are permitted, provided that the following conditions are met:
   *
-  * 1. Redistribution of source code must retain the above copyright notice, 
+  * 1. Redistribution of source code must retain the above copyright notice,
   *    this list of conditions and the following disclaimer.
   * 2. Redistributions in binary form must reproduce the above copyright notice,
   *    this list of conditions and the following disclaimer in the documentation
   *    and/or other materials provided with the distribution.
-  * 3. Neither the name of STMicroelectronics nor the names of other 
-  *    contributors to this software may be used to endorse or promote products 
+  * 3. Neither the name of STMicroelectronics nor the names of other
+  *    contributors to this software may be used to endorse or promote products
   *    derived from this software without specific written permission.
-  * 4. This software, including modifications and/or derivative works of this 
+  * 4. This software, including modifications and/or derivative works of this
   *    software, must execute solely and exclusively on microcontroller or
   *    microprocessor devices manufactured by or for STMicroelectronics.
-  * 5. Redistribution and use of this software other than as permitted under 
-  *    this license is void and will automatically terminate your rights under 
-  *    this license. 
+  * 5. Redistribution and use of this software other than as permitted under
+  *    this license is void and will automatically terminate your rights under
+  *    this license.
   *
-  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
-  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
-  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
-  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT
   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
@@ -65,7 +65,7 @@ uint8_t Bulk_Data_Buff[BULK_MAX_PACKET_SIZE];  /* data buffer*/
 uint16_t Data_Len;
 Bulk_Only_CBW CBW;
 Bulk_Only_CSW CSW;
-uint32_t SCSI_LBA , SCSI_BlkLen;
+uint32_t SCSI_LBA, SCSI_BlkLen;
 extern uint32_t Max_Lun;
 /* Extern variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -81,33 +81,33 @@ extern uint32_t Max_Lun;
 *******************************************************************************/
 void Mass_Storage_In (void)
 {
-  switch (Bot_State)
-  {
+    switch (Bot_State)
+    {
     case BOT_CSW_Send:
     case BOT_ERROR:
-      Bot_State = BOT_IDLE;
-      SetEPRxStatus(ENDP2, EP_RX_VALID);/* enable the Endpoint to receive the next cmd*/
-      if (GetEPRxStatus(EP2_OUT) == EP_RX_STALL)
-      {
-        SetEPRxStatus(EP2_OUT, EP_RX_VALID);/* enable the Endpoint to receive the next cmd*/
-      }
-      break;
+        Bot_State = BOT_IDLE;
+        SetEPRxStatus(ENDP2, EP_RX_VALID);/* enable the Endpoint to receive the next cmd*/
+        if (GetEPRxStatus(EP2_OUT) == EP_RX_STALL)
+        {
+            SetEPRxStatus(EP2_OUT, EP_RX_VALID);/* enable the Endpoint to receive the next cmd*/
+        }
+        break;
     case BOT_DATA_IN:
-      switch (CBW.CB[0])
-      {
+        switch (CBW.CB[0])
+        {
         case SCSI_READ10:
-          SCSI_Read10_Cmd(CBW.bLUN , SCSI_LBA , SCSI_BlkLen);
-          break;
-      }
-      break;
+            SCSI_Read10_Cmd(CBW.bLUN, SCSI_LBA, SCSI_BlkLen);
+            break;
+        }
+        break;
     case BOT_DATA_IN_LAST:
-      Set_CSW (CSW_CMD_PASSED, SEND_CSW_ENABLE);
+        Set_CSW (CSW_CMD_PASSED, SEND_CSW_ENABLE);
 
-      SetEPRxStatus(ENDP2, EP_RX_VALID);
-      break;
+        SetEPRxStatus(ENDP2, EP_RX_VALID);
+        break;
     default:
-      break;
-  }
+        break;
+    }
 }
 
 /*******************************************************************************
@@ -119,32 +119,32 @@ void Mass_Storage_In (void)
 *******************************************************************************/
 void Mass_Storage_Out (void)
 {
-  uint8_t CMD;
-  CMD = CBW.CB[0];
+    uint8_t CMD;
+    CMD = CBW.CB[0];
 
-  Data_Len = USB_SIL_Read(EP2_OUT, Bulk_Data_Buff);
+    Data_Len = USB_SIL_Read(EP2_OUT, Bulk_Data_Buff);
 
-  switch (Bot_State)
-  {
+    switch (Bot_State)
+    {
     case BOT_IDLE:
-      CBW_Decode();
-      break;
-    case BOT_DATA_OUT:
-      if (CMD == SCSI_WRITE10)
-      {
-        SCSI_Write10_Cmd(CBW.bLUN , SCSI_LBA , SCSI_BlkLen);
+        CBW_Decode();
         break;
-      }
-      Bot_Abort(DIR_OUT);
-      Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
-      Set_CSW (CSW_PHASE_ERROR, SEND_CSW_DISABLE);
-      break;
+    case BOT_DATA_OUT:
+        if (CMD == SCSI_WRITE10)
+        {
+            SCSI_Write10_Cmd(CBW.bLUN, SCSI_LBA, SCSI_BlkLen);
+            break;
+        }
+        Bot_Abort(DIR_OUT);
+        Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
+        Set_CSW (CSW_PHASE_ERROR, SEND_CSW_DISABLE);
+        break;
     default:
-      Bot_Abort(BOTH_DIR);
-      Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
-      Set_CSW (CSW_PHASE_ERROR, SEND_CSW_DISABLE);
-      break;
-  }
+        Bot_Abort(BOTH_DIR);
+        Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
+        Set_CSW (CSW_PHASE_ERROR, SEND_CSW_DISABLE);
+        break;
+    }
 }
 
 /*******************************************************************************
@@ -157,139 +157,139 @@ void Mass_Storage_Out (void)
 *******************************************************************************/
 void CBW_Decode(void)
 {
-  uint32_t Counter;
+    uint32_t Counter;
 
-  for (Counter = 0; Counter < Data_Len; Counter++)
-  {
-    *((uint8_t *)&CBW + Counter) = Bulk_Data_Buff[Counter];
-  }
-  CSW.dTag = CBW.dTag;
-  CSW.dDataResidue = CBW.dDataLength;
-  if (Data_Len != BOT_CBW_PACKET_LENGTH)
-  {
-    Bot_Abort(BOTH_DIR);
-    /* reset the CBW.dSignature to disable the clear feature until receiving a Mass storage reset*/
-    CBW.dSignature = 0;
-    Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, PARAMETER_LIST_LENGTH_ERROR);
-    Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
-    return;
-  }
-
-  if ((CBW.CB[0] == SCSI_READ10 ) || (CBW.CB[0] == SCSI_WRITE10 ))
-  {
-    /* Calculate Logical Block Address */
-    SCSI_LBA = (CBW.CB[2] << 24) | (CBW.CB[3] << 16) | (CBW.CB[4] <<  8) | CBW.CB[5];
-    /* Calculate the Number of Blocks to transfer */
-    SCSI_BlkLen = (CBW.CB[7] <<  8) | CBW.CB[8];
-  }
-
-  if (CBW.dSignature == BOT_CBW_SIGNATURE)
-  {
-    /* Valid CBW */
-    if ((CBW.bLUN > Max_Lun) || (CBW.bCBLength < 1) || (CBW.bCBLength > 16))
+    for (Counter = 0; Counter < Data_Len; Counter++)
     {
-      Bot_Abort(BOTH_DIR);
-      Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
-      Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
+        *((uint8_t *)&CBW + Counter) = Bulk_Data_Buff[Counter];
+    }
+    CSW.dTag = CBW.dTag;
+    CSW.dDataResidue = CBW.dDataLength;
+    if (Data_Len != BOT_CBW_PACKET_LENGTH)
+    {
+        Bot_Abort(BOTH_DIR);
+        /* reset the CBW.dSignature to disable the clear feature until receiving a Mass storage reset*/
+        CBW.dSignature = 0;
+        Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, PARAMETER_LIST_LENGTH_ERROR);
+        Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
+        return;
+    }
+
+    if ((CBW.CB[0] == SCSI_READ10 ) || (CBW.CB[0] == SCSI_WRITE10 ))
+    {
+        /* Calculate Logical Block Address */
+        SCSI_LBA = (CBW.CB[2] << 24) | (CBW.CB[3] << 16) | (CBW.CB[4] <<  8) | CBW.CB[5];
+        /* Calculate the Number of Blocks to transfer */
+        SCSI_BlkLen = (CBW.CB[7] <<  8) | CBW.CB[8];
+    }
+
+    if (CBW.dSignature == BOT_CBW_SIGNATURE)
+    {
+        /* Valid CBW */
+        if ((CBW.bLUN > Max_Lun) || (CBW.bCBLength < 1) || (CBW.bCBLength > 16))
+        {
+            Bot_Abort(BOTH_DIR);
+            Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_FIELED_IN_COMMAND);
+            Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
+        }
+        else
+        {
+            switch (CBW.CB[0])
+            {
+            case SCSI_REQUEST_SENSE:
+                SCSI_RequestSense_Cmd (CBW.bLUN);
+                break;
+            case SCSI_INQUIRY:
+                SCSI_Inquiry_Cmd(CBW.bLUN);
+                break;
+            case SCSI_START_STOP_UNIT:
+                SCSI_Start_Stop_Unit_Cmd(CBW.bLUN);
+                break;
+            case SCSI_ALLOW_MEDIUM_REMOVAL:
+                SCSI_Start_Stop_Unit_Cmd(CBW.bLUN);
+                break;
+            case SCSI_MODE_SENSE6:
+                SCSI_ModeSense6_Cmd (CBW.bLUN);
+                break;
+            case SCSI_MODE_SENSE10:
+                SCSI_ModeSense10_Cmd (CBW.bLUN);
+                break;
+            case SCSI_READ_FORMAT_CAPACITIES:
+                SCSI_ReadFormatCapacity_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ_CAPACITY10:
+                SCSI_ReadCapacity10_Cmd(CBW.bLUN);
+                break;
+            case SCSI_TEST_UNIT_READY:
+                SCSI_TestUnitReady_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ10:
+                SCSI_Read10_Cmd(CBW.bLUN, SCSI_LBA, SCSI_BlkLen);
+                break;
+            case SCSI_WRITE10:
+                SCSI_Write10_Cmd(CBW.bLUN, SCSI_LBA, SCSI_BlkLen);
+                break;
+            case SCSI_VERIFY10:
+                SCSI_Verify10_Cmd(CBW.bLUN);
+                break;
+            case SCSI_FORMAT_UNIT:
+                SCSI_Format_Cmd(CBW.bLUN);
+                break;
+            /*Unsupported command*/
+            case SCSI_MODE_SELECT10:
+                SCSI_Mode_Select10_Cmd(CBW.bLUN);
+                break;
+            case SCSI_MODE_SELECT6:
+                SCSI_Mode_Select6_Cmd(CBW.bLUN);
+                break;
+
+            case SCSI_SEND_DIAGNOSTIC:
+                SCSI_Send_Diagnostic_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ6:
+                SCSI_Read6_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ12:
+                SCSI_Read12_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ16:
+                SCSI_Read16_Cmd(CBW.bLUN);
+                break;
+            case SCSI_READ_CAPACITY16:
+                SCSI_READ_CAPACITY16_Cmd(CBW.bLUN);
+                break;
+            case SCSI_WRITE6:
+                SCSI_Write6_Cmd(CBW.bLUN);
+                break;
+            case SCSI_WRITE12:
+                SCSI_Write12_Cmd(CBW.bLUN);
+                break;
+            case SCSI_WRITE16:
+                SCSI_Write16_Cmd(CBW.bLUN);
+                break;
+            case SCSI_VERIFY12:
+                SCSI_Verify12_Cmd(CBW.bLUN);
+                break;
+            case SCSI_VERIFY16:
+                SCSI_Verify16_Cmd(CBW.bLUN);
+                break;
+
+            default:
+            {
+                Bot_Abort(BOTH_DIR);
+                Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_COMMAND);
+                Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
+            }
+            }
+        }
     }
     else
     {
-      switch (CBW.CB[0])
-      {
-        case SCSI_REQUEST_SENSE:
-          SCSI_RequestSense_Cmd (CBW.bLUN);
-          break;
-        case SCSI_INQUIRY:
-          SCSI_Inquiry_Cmd(CBW.bLUN);
-          break;
-        case SCSI_START_STOP_UNIT:
-          SCSI_Start_Stop_Unit_Cmd(CBW.bLUN);
-          break;
-        case SCSI_ALLOW_MEDIUM_REMOVAL:
-          SCSI_Start_Stop_Unit_Cmd(CBW.bLUN);
-          break;
-        case SCSI_MODE_SENSE6:
-          SCSI_ModeSense6_Cmd (CBW.bLUN);
-          break;
-        case SCSI_MODE_SENSE10:
-          SCSI_ModeSense10_Cmd (CBW.bLUN);
-          break;
-        case SCSI_READ_FORMAT_CAPACITIES:
-          SCSI_ReadFormatCapacity_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ_CAPACITY10:
-          SCSI_ReadCapacity10_Cmd(CBW.bLUN);
-          break;
-        case SCSI_TEST_UNIT_READY:
-          SCSI_TestUnitReady_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ10:
-          SCSI_Read10_Cmd(CBW.bLUN, SCSI_LBA , SCSI_BlkLen);
-          break;
-        case SCSI_WRITE10:
-          SCSI_Write10_Cmd(CBW.bLUN, SCSI_LBA , SCSI_BlkLen);
-          break;
-        case SCSI_VERIFY10:
-          SCSI_Verify10_Cmd(CBW.bLUN);
-          break;
-        case SCSI_FORMAT_UNIT:
-          SCSI_Format_Cmd(CBW.bLUN);
-          break;
-          /*Unsupported command*/
-        case SCSI_MODE_SELECT10:
-          SCSI_Mode_Select10_Cmd(CBW.bLUN);
-          break;
-        case SCSI_MODE_SELECT6:
-          SCSI_Mode_Select6_Cmd(CBW.bLUN);
-          break;
-
-        case SCSI_SEND_DIAGNOSTIC:
-          SCSI_Send_Diagnostic_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ6:
-          SCSI_Read6_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ12:
-          SCSI_Read12_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ16:
-          SCSI_Read16_Cmd(CBW.bLUN);
-          break;
-        case SCSI_READ_CAPACITY16:
-          SCSI_READ_CAPACITY16_Cmd(CBW.bLUN);
-          break;
-        case SCSI_WRITE6:
-          SCSI_Write6_Cmd(CBW.bLUN);
-          break;
-        case SCSI_WRITE12:
-          SCSI_Write12_Cmd(CBW.bLUN);
-          break;
-        case SCSI_WRITE16:
-          SCSI_Write16_Cmd(CBW.bLUN);
-          break;
-        case SCSI_VERIFY12:
-          SCSI_Verify12_Cmd(CBW.bLUN);
-          break;
-        case SCSI_VERIFY16:
-          SCSI_Verify16_Cmd(CBW.bLUN);
-          break;
-
-        default:
-        {
-          Bot_Abort(BOTH_DIR);
-          Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_COMMAND);
-          Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
-        }
-      }
+        /* Invalid CBW */
+        Bot_Abort(BOTH_DIR);
+        Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_COMMAND);
+        Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
     }
-  }
-  else
-  {
-    /* Invalid CBW */
-    Bot_Abort(BOTH_DIR);
-    Set_Scsi_Sense_Data(CBW.bLUN, ILLEGAL_REQUEST, INVALID_COMMAND);
-    Set_CSW (CSW_CMD_FAILED, SEND_CSW_DISABLE);
-  }
 }
 
 /*******************************************************************************
@@ -302,13 +302,13 @@ void CBW_Decode(void)
 *******************************************************************************/
 void Transfer_Data_Request(uint8_t* Data_Pointer, uint16_t Data_Len)
 {
-  USB_SIL_Write(EP1_IN, Data_Pointer, Data_Len);
+    USB_SIL_Write(EP1_IN, Data_Pointer, Data_Len);
 
     SetEPTxStatus(ENDP1, EP_TX_VALID);
-    
-  Bot_State = BOT_DATA_IN_LAST;
-  CSW.dDataResidue -= Data_Len;
-  CSW.bStatus = CSW_CMD_PASSED;
+
+    Bot_State = BOT_DATA_IN_LAST;
+    CSW.dDataResidue -= Data_Len;
+    CSW.bStatus = CSW_CMD_PASSED;
 }
 
 /*******************************************************************************
@@ -321,17 +321,17 @@ void Transfer_Data_Request(uint8_t* Data_Pointer, uint16_t Data_Len)
 *******************************************************************************/
 void Set_CSW (uint8_t CSW_Status, uint8_t Send_Permission)
 {
-  CSW.dSignature = BOT_CSW_SIGNATURE;
-  CSW.bStatus = CSW_Status;
+    CSW.dSignature = BOT_CSW_SIGNATURE;
+    CSW.bStatus = CSW_Status;
 
-  USB_SIL_Write(EP1_IN, ((uint8_t *)& CSW), CSW_DATA_LENGTH);
+    USB_SIL_Write(EP1_IN, ((uint8_t *)& CSW), CSW_DATA_LENGTH);
 
-  Bot_State = BOT_ERROR;
-  if (Send_Permission)
-  {
-    Bot_State = BOT_CSW_Send;
-    SetEPTxStatus(ENDP1, EP_TX_VALID);
-  }
+    Bot_State = BOT_ERROR;
+    if (Send_Permission)
+    {
+        Bot_State = BOT_CSW_Send;
+        SetEPTxStatus(ENDP1, EP_TX_VALID);
+    }
 }
 
 /*******************************************************************************
@@ -343,21 +343,21 @@ void Set_CSW (uint8_t CSW_Status, uint8_t Send_Permission)
 *******************************************************************************/
 void Bot_Abort(uint8_t Direction)
 {
-  switch (Direction)
-  {
+    switch (Direction)
+    {
     case DIR_IN :
-      SetEPTxStatus(ENDP1, EP_TX_STALL);
-      break;
+        SetEPTxStatus(ENDP1, EP_TX_STALL);
+        break;
     case DIR_OUT :
-      SetEPRxStatus(ENDP2, EP_RX_STALL);
-      break;
+        SetEPRxStatus(ENDP2, EP_RX_STALL);
+        break;
     case BOTH_DIR :
-      SetEPTxStatus(ENDP1, EP_TX_STALL);
-      SetEPRxStatus(ENDP2, EP_RX_STALL);
-      break;
+        SetEPTxStatus(ENDP1, EP_TX_STALL);
+        SetEPRxStatus(ENDP2, EP_RX_STALL);
+        break;
     default:
-      break;
-  }
+        break;
+    }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

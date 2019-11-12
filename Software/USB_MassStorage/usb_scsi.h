@@ -128,15 +128,15 @@ void SCSI_RequestSense_Cmd (uint8_t lun);
 void SCSI_Start_Stop_Unit_Cmd(uint8_t lun);
 void SCSI_ModeSense6_Cmd (uint8_t lun);
 void SCSI_ModeSense10_Cmd (uint8_t lun);
-void SCSI_Write10_Cmd(uint8_t lun , uint32_t LBA , uint32_t BlockNbr);
-void SCSI_Read10_Cmd(uint8_t lun , uint32_t LBA , uint32_t BlockNbr);
+void SCSI_Write10_Cmd(uint8_t lun, uint32_t LBA, uint32_t BlockNbr);
+void SCSI_Read10_Cmd(uint8_t lun, uint32_t LBA, uint32_t BlockNbr);
 void SCSI_Verify10_Cmd(uint8_t lun);
 
 void SCSI_Invalid_Cmd(uint8_t lun);
 void SCSI_Valid_Cmd(uint8_t lun);
-bool SCSI_Address_Management(uint8_t lun , uint8_t Cmd , uint32_t LBA , uint32_t BlockNbr);
+bool SCSI_Address_Management(uint8_t lun, uint8_t Cmd, uint32_t LBA, uint32_t BlockNbr);
 
-void Set_Scsi_Sense_Data(uint8_t lun , uint8_t Sens_Key, uint8_t Asc);
+void Set_Scsi_Sense_Data(uint8_t lun, uint8_t Sens_Key, uint8_t Asc);
 void SCSI_TestUnitReady_Cmd (uint8_t lun);
 void SCSI_Format_Cmd (uint8_t lun);
 

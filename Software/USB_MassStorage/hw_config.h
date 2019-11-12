@@ -41,14 +41,17 @@
 #define __HW_CONFIG_H
 
 /* Includes ------------------------------------------------------------------*/
-
-#include "platform_config.h"
+#include "stm32f10x.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported define -----------------------------------------------------------*/
 #define BULK_MAX_PACKET_SIZE  0x00000040
+
+#define         ID1          (0x1FFFF7E8)
+#define         ID2          (0x1FFFF7EC)
+#define         ID3          (0x1FFFF7F0)
 
 /* Exported functions ------------------------------------------------------- */
 void Set_System(void);
@@ -64,7 +67,7 @@ void USB_NotConfigured_LED(void);
 void USB_Cable_Config (FunctionalState NewState);
 void Get_SerialNum(void);
 void MAL_Config(void);
-#if !defined (USE_STM32L152_EVAL) 
+#if !defined (USE_STM32L152_EVAL)
 void USB_Disconnect_Config(void);
 #endif /* (USE_STM32L152_EVAL) */
 /* External variables --------------------------------------------------------*/
