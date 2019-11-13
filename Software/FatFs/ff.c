@@ -21,7 +21,7 @@
 
 #include "ff.h"			/* Declarations of FatFs API */
 #include "diskio.h"		/* Declarations of device I/O functions */
-
+#include "ucos_ii.h"
 
 /*--------------------------------------------------------------------------
 
@@ -269,7 +269,7 @@
 #endif
 #define GET_FATTIME()	((DWORD)(FF_NORTC_YEAR - 1980) << 25 | (DWORD)FF_NORTC_MON << 21 | (DWORD)FF_NORTC_MDAY << 16)
 #else
-#define GET_FATTIME()	get_fattime()
+#define GET_FATTIME()	OSTimeGet()
 #endif
 
 

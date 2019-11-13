@@ -75,7 +75,7 @@ Key_Stat Key_GetColStat(uint8_t Col);
 
 void FLASH_Init(void);
 void FLASH_Read(uint8_t *Buf, uint32_t Addr, uint16_t Size);
-void FLASH_Write(uint8_t *Buf, uint32_t Addr, uint16_t Size);
+void FLASH_Write(const uint8_t *Buf, uint32_t Addr, uint16_t Size);
 uint8_t FLASH_Status(void);
 uint16_t FLASH_ManufactDeviceID(void);
 

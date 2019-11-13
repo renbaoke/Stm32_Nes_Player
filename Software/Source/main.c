@@ -1,6 +1,7 @@
 #include "stm32f10x.h"
 #include "bsp_driver.h"
 #include "ucos_ii.h"
+#include "ff.h"
 
 extern OS_STK ShellTaskStk[SHELL_TASK_STK_SIZE];
 extern void ShellTask(void *Arg);
@@ -8,7 +9,13 @@ extern void ShellTask(void *Arg);
 extern OS_STK KeyTaskStk[KEY_TASK_STK_SIZE];
 extern void KeyTask(void *Arg);
 
+FATFS fs;
 OS_EVENT *ShellMbox;
+
+void FS_Init()
+{
+    f_mount(&fs, "", 0);
+}
 
 void Event_Init()
 {
@@ -21,6 +28,7 @@ void StartTask(void *Arg)
     Event_Init();
     Board_Init();
     OSStatInit();
+    FS_Init();
 
     OSTaskCreate(ShellTask, 0, &ShellTaskStk[SHELL_TASK_STK_SIZE-1], SHELL_TASK_PRIO);
     OSTaskCreate(KeyTask, 0, &KeyTaskStk[KEY_TASK_STK_SIZE-1], KEY_TASK_PRIO);

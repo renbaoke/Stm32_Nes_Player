@@ -4,6 +4,7 @@
 #include "string.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "ff.h"
 
 int fputc(int ch, FILE *f)
 {
@@ -171,12 +172,45 @@ int FlashCmd(int Argc, char *Argv[])
     return 0;
 }
 
+int FsCmd(int Argc, char *Argv[])
+{
+    extern FATFS fs;
+
+    if (Argc < 2)
+    {
+        return -1;
+    }
+
+    if (!strcmp(Argv[1], "ls"))
+    {
+        DIR dir;
+        FILINFO fno;
+        if (f_opendir(&dir, Argv[2]) != FR_OK)
+        {
+            printf("directory %s not found\r\n", Argv[1]);
+            return -1;
+        }
+
+        while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0] != 0)
+        {
+            printf("%s\r\n", fno.fname);
+        }
+    }
+    else
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 CmdType AllCmds[] =
 {
     {"echo", EchoCmd},
     {"gpio", GPIOCmd},
     {"cpu", CPUCmd},
-    {"flash", FlashCmd}
+    {"flash", FlashCmd},
+    {"fs", FsCmd}
 };
 
 //////////////////////////////////////////////////////////////////////////////////

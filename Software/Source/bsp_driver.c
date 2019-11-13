@@ -321,7 +321,7 @@ void FLASH_SetWriteStat(Flash_WriteStat Stat)
     FLASH_WaitForIdel();
 }
 
-void FLASH_PageWrite(uint8_t *Buf, uint32_t Addr)
+void FLASH_PageWrite(const uint8_t *Buf, uint32_t Addr)
 {
     FLASH_SetWriteStat(Flash_WriteEnable);
 
@@ -342,7 +342,7 @@ void FLASH_PageWrite(uint8_t *Buf, uint32_t Addr)
     FLASH_WaitForIdel();
 }
 
-void FLASH_SectorWrite(uint8_t *Buf, uint32_t Addr)
+void FLASH_SectorWrite(const uint8_t *Buf, uint32_t Addr)
 {
     for (uint8_t i = 0; i < FLASH_PAGE_PER_SECTOR; i++)
     {
@@ -368,7 +368,7 @@ void FLASH_SectorErase(uint32_t Addr)
     FLASH_WaitForIdel();
 }
 
-void FLASH_Write(uint8_t *Buf, uint32_t Addr, uint16_t Size)
+void FLASH_Write(const uint8_t *Buf, uint32_t Addr, uint16_t Size)
 {
     GPIO_ResetBits(FLASH_CS_PIN.GPIO_Port, FLASH_CS_PIN.GPIO_Pin);
 

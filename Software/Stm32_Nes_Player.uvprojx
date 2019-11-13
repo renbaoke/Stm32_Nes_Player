@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Include;.\uCos_II;.\USB_DeviceDriver;.\USB_MassStorage</IncludePath>
+              <IncludePath>.\Include;.\uCos_II;.\USB_DeviceDriver;.\USB_MassStorage;.\FatFs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
