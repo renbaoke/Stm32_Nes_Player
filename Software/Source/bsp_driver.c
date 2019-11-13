@@ -1,6 +1,8 @@
 #include "stm32f10x.h"
 #include "bsp_driver.h"
 #include "ucos_ii.h"
+#include "usb_init.h"
+#include "hw_config.h"
 
 const GPIO_InitDef LED_PIN =          {GPIOC, GPIO_Pin_13, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
 const GPIO_InitDef USART1_TX_PIN =    {GPIOA, GPIO_Pin_9, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
@@ -21,6 +23,8 @@ const GPIO_InitDef KEY_C2_PIN =       {GPIOA, GPIO_Pin_5, GPIO_Speed_50MHz, GPIO
 const GPIO_InitDef KEY_C3_PIN =       {GPIOA, GPIO_Pin_6, GPIO_Speed_50MHz, GPIO_Mode_IPD};
 const GPIO_InitDef KEY_C4_PIN =       {GPIOA, GPIO_Pin_7, GPIO_Speed_50MHz, GPIO_Mode_IPD};
 const GPIO_InitDef FLASH_CS_PIN =     {GPIOB, GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP};
+const GPIO_InitDef USB_DM_PIN =       {GPIOA, GPIO_Pin_11, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
+const GPIO_InitDef USB_DP_PIN =       {GPIOA, GPIO_Pin_12, GPIO_Speed_50MHz, GPIO_Mode_AF_PP};
 
 uint8_t LCD_PostInitCmd[] = {
     0x11, 1, 0x00,
@@ -438,6 +442,29 @@ uint8_t FLASH_Status()
     return FlashStatus;
 }
 
+void USB_Init2()
+{
+    GPIO_INIT(USB_DM_PIN);
+    GPIO_INIT(USB_DP_PIN);
+    
+    MAL_Config();
+
+    NVIC_InitTypeDef USB_IRQ_Conf;
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+    USB_IRQ_Conf.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;
+    USB_IRQ_Conf.NVIC_IRQChannelPreemptionPriority = 2;
+    USB_IRQ_Conf.NVIC_IRQChannelSubPriority = 0;
+    USB_IRQ_Conf.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&USB_IRQ_Conf);
+
+    USB_IRQ_Conf.NVIC_IRQChannel = USBWakeUp_IRQn;
+    USB_IRQ_Conf.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_Init(&USB_IRQ_Conf);
+    
+    USB_Init();
+}
+
 void Board_Init()
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -448,10 +475,14 @@ void Board_Init()
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2,ENABLE);
 
+    RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
+
     SysTick_Init();
     LED_Init();
     USART1_Init();
     LCD_Init();
     KEY_Init();
     FLASH_Init();
+    USB_Init2();
 }

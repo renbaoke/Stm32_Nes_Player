@@ -1,6 +1,8 @@
 #include "stm32f10x.h"
 #include "bsp_driver.h"
 #include "ucos_ii.h"
+#include "usb_int.h"
+#include "usb_istr.h"
 
 #define BS      0x08
 #define CR      0x0d
@@ -41,4 +43,14 @@ void USART1_IRQHandler(void)
             USART_SendData(USART1, Data);
         }
     }
+}
+
+void USB_HP_CAN1_TX_IRQHandler(void)
+{
+  CTR_HP();
+}
+
+void USB_LP_CAN1_RX0_IRQHandler(void)
+{
+  USB_Istr();
 }

@@ -79,6 +79,8 @@ void FLASH_Write(uint8_t *Buf, uint32_t Addr, uint16_t Size);
 uint8_t FLASH_Status(void);
 uint16_t FLASH_ManufactDeviceID(void);
 
+void USB_Init2(void);
+
 void Board_Init(void);
 
 #endif

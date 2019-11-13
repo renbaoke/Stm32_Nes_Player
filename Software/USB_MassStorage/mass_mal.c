@@ -49,6 +49,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "mass_mal.h"
+#include "bsp_driver.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -58,10 +59,6 @@ uint32_t Mass_Memory_Size[2];
 uint32_t Mass_Block_Size[2];
 uint32_t Mass_Block_Count[2];
 __IO uint32_t Status = 0;
-
-#if defined(USE_STM3210E_EVAL) || defined(USE_STM32L152D_EVAL)
-SD_CardInfo mSDCardInfo;
-#endif
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -76,6 +73,10 @@ uint16_t MAL_Init(uint8_t lun)
 {
     uint16_t status = MAL_OK;
 
+    Mass_Memory_Size[0] = 8 * 1024 * 1024;
+    Mass_Block_Size[0]  = 512;
+    Mass_Block_Count[0] = 16 * 1024;
+    
     return status;
 }
 /*******************************************************************************
@@ -91,6 +92,7 @@ uint16_t MAL_Write(uint8_t lun, uint32_t Memory_Offset, uint32_t *Writebuff, uin
     switch (lun)
     {
     case 0:
+        FLASH_Write((uint8_t*)Writebuff, Memory_Offset, Transfer_Length);
         return MAL_OK;
     default:
         return MAL_FAIL;
@@ -110,6 +112,7 @@ uint16_t MAL_Read(uint8_t lun, uint32_t Memory_Offset, uint32_t *Readbuff, uint1
     switch (lun)
     {
     case 0:
+        FLASH_Read((uint8_t*)Readbuff, Memory_Offset, Transfer_Length);
         return MAL_OK;
     default:
         return MAL_FAIL;
@@ -126,7 +129,7 @@ uint16_t MAL_Read(uint8_t lun, uint32_t Memory_Offset, uint32_t *Readbuff, uint1
 *******************************************************************************/
 uint16_t MAL_GetStatus (uint8_t lun)
 {
-    return MAL_FAIL;
+    return MAL_OK;
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
