@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Include;.\uCos_II;.\USB_DeviceDriver;.\USB_MassStorage;.\FatFs</IncludePath>
+              <IncludePath>.\Include;.\uCos_II;.\USB_DeviceDriver;.\USB_MassStorage;.\FatFs;.\InfoNES</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -736,6 +736,71 @@
               <FileName>ffunicode.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\FatFs\ffunicode.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>InfoNES</GroupName>
+          <Files>
+            <File>
+              <FileName>InfoNES.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\InfoNES\InfoNES.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\InfoNES.h</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_Mapper.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\InfoNES\InfoNES_Mapper.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_Mapper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\InfoNES_Mapper.h</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_pAPU.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\InfoNES\InfoNES_pAPU.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_pAPU.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\InfoNES_pAPU.h</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_System.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\InfoNES_System.h</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_Types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\InfoNES_Types.h</FilePath>
+            </File>
+            <File>
+              <FileName>K6502.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\InfoNES\K6502.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>K6502.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\K6502.h</FilePath>
+            </File>
+            <File>
+              <FileName>K6502_rw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\InfoNES\K6502_rw.h</FilePath>
+            </File>
+            <File>
+              <FileName>InfoNES_System_Stm32.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\InfoNES\InfoNES_System_Stm32.cpp</FilePath>
             </File>
           </Files>
         </Group>
