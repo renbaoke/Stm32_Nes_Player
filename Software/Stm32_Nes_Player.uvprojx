@@ -743,9 +743,9 @@
           <GroupName>InfoNES</GroupName>
           <Files>
             <File>
-              <FileName>InfoNES.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\InfoNES\InfoNES.cpp</FilePath>
+              <FileName>InfoNES.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\InfoNES\InfoNES.c</FilePath>
             </File>
             <File>
               <FileName>InfoNES.h</FileName>
@@ -753,9 +753,9 @@
               <FilePath>.\InfoNES\InfoNES.h</FilePath>
             </File>
             <File>
-              <FileName>InfoNES_Mapper.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\InfoNES\InfoNES_Mapper.cpp</FilePath>
+              <FileName>InfoNES_Mapper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\InfoNES\InfoNES_Mapper.c</FilePath>
             </File>
             <File>
               <FileName>InfoNES_Mapper.h</FileName>
@@ -763,9 +763,9 @@
               <FilePath>.\InfoNES\InfoNES_Mapper.h</FilePath>
             </File>
             <File>
-              <FileName>InfoNES_pAPU.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\InfoNES\InfoNES_pAPU.cpp</FilePath>
+              <FileName>InfoNES_pAPU.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\InfoNES\InfoNES_pAPU.c</FilePath>
             </File>
             <File>
               <FileName>InfoNES_pAPU.h</FileName>
@@ -778,14 +778,19 @@
               <FilePath>.\InfoNES\InfoNES_System.h</FilePath>
             </File>
             <File>
+              <FileName>InfoNES_System_Stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\InfoNES\InfoNES_System_Stm32.c</FilePath>
+            </File>
+            <File>
               <FileName>InfoNES_Types.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\InfoNES\InfoNES_Types.h</FilePath>
             </File>
             <File>
-              <FileName>K6502.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\InfoNES\K6502.cpp</FilePath>
+              <FileName>K6502.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\InfoNES\K6502.c</FilePath>
             </File>
             <File>
               <FileName>K6502.h</FileName>
@@ -796,11 +801,6 @@
               <FileName>K6502_rw.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\InfoNES\K6502_rw.h</FilePath>
-            </File>
-            <File>
-              <FileName>InfoNES_System_Stm32.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\InfoNES\InfoNES_System_Stm32.cpp</FilePath>
             </File>
           </Files>
         </Group>

@@ -6,6 +6,16 @@
 #include "stdio.h"
 #include "ff.h"
 
+typedef struct NesHeader_tag
+{
+    BYTE byID[ 4 ];
+    BYTE byRomSize;
+    BYTE byVRomSize;
+    BYTE byInfo1;
+    BYTE byInfo2;
+    BYTE byReserve[ 8 ];
+} NesHeader;
+
 int fputc(int ch, FILE *f)
 {
     USART_SendData(USART1, (unsigned char)ch);
@@ -204,13 +214,63 @@ int FsCmd(int Argc, char *Argv[])
     return 0;
 }
 
+int NesCmd(int Argc, char *Argv[])
+{
+    if (Argc < 2)
+    {
+        return -1;
+    }
+
+    if (!strcmp(Argv[1], "info"))
+    {
+        if (Argc < 3)
+        {
+            return -1;
+        }
+        FIL f;
+        UINT br;
+        NesHeader nh;
+
+        if (f_open(&f, Argv[2], FA_READ | FA_OPEN_EXISTING) != FR_OK)
+        {
+            printf("open %s failed\r\n", Argv[2]);
+            return 0;
+        }
+
+        if (f_read(&f, &nh, sizeof(nh), &br) != FR_OK)
+        {
+            printf("read header failed\r\n");
+            goto END;
+        }
+
+        if (memcmp(nh.byID, "NES\x1a", 4) != 0)
+        {
+            printf("%s is not a nes file\r\n", Argv[2]);
+            goto END;
+        }
+
+        printf("rom size : %d\r\n", nh.byRomSize);
+        printf("vrom size : %d\r\n", nh.byVRomSize);
+
+END:
+        f_close(&f);
+    }
+    else
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 CmdType AllCmds[] =
 {
     {"echo", EchoCmd},
     {"gpio", GPIOCmd},
     {"cpu", CPUCmd},
     {"flash", FlashCmd},
-    {"fs", FsCmd}
+    {"fs", FsCmd},
+    {"nes", NesCmd}
 };
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -9,12 +9,12 @@ DWORD Map1_Cnt;
 BYTE  Map1_Latch;
 WORD  Map1_Last_Write_Addr;
 
-enum Map1_Size_t
+typedef enum Map1_Size_t_
 {
   Map1_SMALL,
   Map1_512K,
   Map1_1024K
-};
+} Map1_Size_t;
 
 Map1_Size_t Map1_Size;
 DWORD Map1_256K_base;
